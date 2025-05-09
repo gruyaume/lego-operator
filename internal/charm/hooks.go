@@ -14,16 +14,18 @@ func HandleDefaultHook(ctx context.Context, hookContext *goops.HookContext) {
 	_, span := otel.Tracer("lego").Start(ctx, "handle default hook")
 	defer span.End()
 
-	// Validate config options
-	err := validateConfigOptions(ctx, hookContext)
+	err := ensureLeader(ctx, hookContext)
 	if err != nil {
-		hookContext.Commands.JujuLog(commands.Error, "Invalid config options:", err.Error())
+		return
+	}
+
+	err = validateConfigOptions(ctx, hookContext)
+	if err != nil {
 		return
 	}
 
 	err = syncCertificates(ctx, hookContext)
 	if err != nil {
-		hookContext.Commands.JujuLog(commands.Error, "Error syncing certificates:", err.Error())
 		return
 	}
 }
@@ -53,25 +55,22 @@ func SetStatus(ctx context.Context, hookContext *goops.HookContext) {
 	hookContext.Commands.JujuLog(commands.Info, "Status set to active")
 }
 
-func syncCertificates(ctx context.Context, hookContext *goops.HookContext) error {
-	_, span := otel.Tracer("lego").Start(ctx, "sync certificates")
+func ensureLeader(ctx context.Context, hookContext *goops.HookContext) error {
+	_, span := otel.Tracer("lego").Start(ctx, "ensure leader")
 	defer span.End()
 
-	certsIntegration := certificates.IntegrationProvider{
-		HookContext:  hookContext,
-		RelationName: "certificates",
-	}
-
-	certRequests, err := certsIntegration.GetCertificateRequests()
+	isLeader, err := hookContext.Commands.IsLeader()
 	if err != nil {
-		hookContext.Commands.JujuLog(commands.Error, "Error getting certificate requests:", err.Error())
-		return err
+		hookContext.Commands.JujuLog(commands.Warning, "Could not check if unit is leader:", err.Error())
+		return fmt.Errorf("could not check if unit is leader: %w", err)
 	}
 
-	if len(certRequests) == 0 {
-		hookContext.Commands.JujuLog(commands.Info, "No certificate requests found")
-		return nil
+	if !isLeader {
+		hookContext.Commands.JujuLog(commands.Warning, "Unit is not leader")
+		return fmt.Errorf("unit is not leader")
 	}
+
+	hookContext.Commands.JujuLog(commands.Info, "Unit is leader")
 
 	return nil
 }
@@ -96,6 +95,29 @@ func validateConfigOptions(ctx context.Context, hookContext *goops.HookContext) 
 
 	if server == "" {
 		return fmt.Errorf("server config is empty")
+	}
+
+	return nil
+}
+
+func syncCertificates(ctx context.Context, hookContext *goops.HookContext) error {
+	_, span := otel.Tracer("lego").Start(ctx, "sync certificates")
+	defer span.End()
+
+	certsIntegration := certificates.IntegrationProvider{
+		HookContext:  hookContext,
+		RelationName: "certificates",
+	}
+
+	certRequests, err := certsIntegration.GetCertificateRequests()
+	if err != nil {
+		hookContext.Commands.JujuLog(commands.Error, "Error getting certificate requests:", err.Error())
+		return err
+	}
+
+	if len(certRequests) == 0 {
+		hookContext.Commands.JujuLog(commands.Info, "No certificate requests found")
+		return nil
 	}
 
 	return nil
