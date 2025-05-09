@@ -45,6 +45,10 @@ config:
         You can find the required options for your chosen plugin in the [LEGO documentation](https://go-acme.github.io/lego/dns).
         For example, the `route53` plugin requires a `secret-access-key` and `access-key-id` to be set.
 
+provides:
+  certificates:
+    interface: tls-certificates
+
 requires:
   tracing:
     interface: tracing
