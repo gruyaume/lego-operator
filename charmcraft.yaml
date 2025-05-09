@@ -1,5 +1,4 @@
 name: lego
-summary: Certificate management made easy
 
 description: |
   LEGO operator implementing the provider side of the `tls-certificates`

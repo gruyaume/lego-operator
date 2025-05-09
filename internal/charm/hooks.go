@@ -9,23 +9,16 @@ import (
 )
 
 func HandleDefaultHook(ctx context.Context, hookContext *goops.HookContext) {
-	return
 }
 
 func SetStatus(ctx context.Context, hookContext *goops.HookContext) {
 	_, span := otel.Tracer("lego").Start(ctx, "SetStatus")
 	defer span.End()
 
-	status := commands.StatusActive
-
-	message := ""
-
-	statusSetOpts := &commands.StatusSetOptions{
-		Name:    status,
-		Message: message,
-	}
-
-	err := hookContext.Commands.StatusSet(statusSetOpts)
+	err := hookContext.Commands.StatusSet(&commands.StatusSetOptions{
+		Name:    commands.StatusActive,
+		Message: "",
+	})
 	if err != nil {
 		hookContext.Commands.JujuLog(commands.Error, "Could not set status:", err.Error())
 		return
