@@ -79,22 +79,18 @@ func validateConfigOptions(ctx context.Context, hookContext *goops.HookContext) 
 	_, span := otel.Tracer("lego").Start(ctx, "validate config")
 	defer span.End()
 
-	email, err := hookContext.Commands.ConfigGetString(&commands.ConfigGetOptions{Key: "email"})
+	config := ConfigOptions{}
+
+	err := config.LoadFromJuju(hookContext)
 	if err != nil {
-		return fmt.Errorf("failed to get email config: %w", err)
+		hookContext.Commands.JujuLog(commands.Warning, "Couldn't load config options: %s", err.Error())
+		return fmt.Errorf("couldn't load config options: %w", err)
 	}
 
-	if email == "" {
-		return fmt.Errorf("email config is empty")
-	}
-
-	server, err := hookContext.Commands.ConfigGetString(&commands.ConfigGetOptions{Key: "server"})
+	err = config.Validate()
 	if err != nil {
-		return fmt.Errorf("failed to get server config: %w", err)
-	}
-
-	if server == "" {
-		return fmt.Errorf("server config is empty")
+		hookContext.Commands.JujuLog(commands.Warning, "Config is not valid: %s", err.Error())
+		return fmt.Errorf("config is not valid: %w", err)
 	}
 
 	return nil
@@ -120,8 +116,16 @@ func syncCertificates(ctx context.Context, hookContext *goops.HookContext) error
 		return nil
 	}
 
+	config := ConfigOptions{}
+
+	err = config.LoadFromJuju(hookContext)
+	if err != nil {
+		hookContext.Commands.JujuLog(commands.Warning, "Couldn't load config options: %s", err.Error())
+		return fmt.Errorf("couldn't load config options: %w", err)
+	}
+
 	for _, cert := range certRequests {
-		_, err := requestCertificate("", "", cert.CertificateSigningRequest, "") // TO DO
+		_, err := requestCertificate(config.email, config.server, cert.CertificateSigningRequest, config.plugin)
 		if err != nil {
 			hookContext.Commands.JujuLog(commands.Error, "Could not request certificate: %v", err.Error())
 			continue
