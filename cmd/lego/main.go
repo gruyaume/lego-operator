@@ -5,7 +5,7 @@ import (
 
 	"github.com/gruyaume/goops"
 	"github.com/gruyaume/goops/commands"
-	"github.com/gruyaume/lego/internal/charm"
+	"github.com/gruyaume/lego-operator/internal/charm"
 	"github.com/gruyaume/notary-k8s-operator/integrations/tracing"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/sdk/trace"

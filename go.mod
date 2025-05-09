@@ -1,4 +1,4 @@
-module github.com/gruyaume/lego
+module github.com/gruyaume/lego-operator
 
 go 1.24.0
 
