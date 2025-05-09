@@ -27,10 +27,8 @@ func main() {
 	run(hc, hook)
 }
 
-// run initializes tracing, starts the root span, dispatches hooks, and ensures shutdown.
 func run(hc *goops.HookContext, hook string) {
 	ctx, tp := initTracing(hc)
-	// ensure tracer is shut down
 	defer shutdown(tp, ctx)
 
 	tracer := otel.Tracer(serviceName)
@@ -38,14 +36,12 @@ func run(hc *goops.HookContext, hook string) {
 
 	defer span.End()
 
-	// execute charm hooks under span
 	charm.HandleDefaultHook(ctx, hc)
 	charm.SetStatus(ctx, hc)
 
 	flush(tp, ctx)
 }
 
-// initTracing sets up the tracing integration and returns ctx and TracerProvider (or nil).
 func initTracing(hc *goops.HookContext) (context.Context, *trace.TracerProvider) {
 	ti := tracing.Integration{
 		HookContext:  hc,
@@ -65,14 +61,12 @@ func initTracing(hc *goops.HookContext) (context.Context, *trace.TracerProvider)
 	return ctx, tp
 }
 
-// flush ensures all spans are exported before shutdown.
 func flush(tp *trace.TracerProvider, ctx context.Context) {
 	if tp != nil {
 		tp.ForceFlush(ctx)
 	}
 }
 
-// shutdown cleanly stops the tracer provider.
 func shutdown(tp *trace.TracerProvider, ctx context.Context) {
 	if tp == nil {
 		return
