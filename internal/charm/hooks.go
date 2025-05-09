@@ -120,5 +120,13 @@ func syncCertificates(ctx context.Context, hookContext *goops.HookContext) error
 		return nil
 	}
 
+	for _, cert := range certRequests {
+		_, err := requestCertificate("", "", cert.CertificateSigningRequest, "") // TO DO
+		if err != nil {
+			hookContext.Commands.JujuLog(commands.Error, "Could not request certificate: %v", err.Error())
+			continue
+		}
+	}
+
 	return nil
 }
