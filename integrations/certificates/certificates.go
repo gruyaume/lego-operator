@@ -73,3 +73,86 @@ func (i *IntegrationProvider) GetCertificateRequests() ([]*RequirerCertificateSi
 
 	return requirerCertificateSigningRequests, nil
 }
+
+type ProviderAppData struct {
+	CA                        string   `json:"ca"`
+	Chain                     []string `json:"chain"`
+	CertificateSigningRequest string   `json:"certificate_signing_request"`
+	Certificate               string   `json:"certificate"`
+}
+
+type Certificate struct {
+	Raw                 string
+	CommonName          string
+	ExpiryTime          string
+	ValidityStartTime   string
+	IsCA                bool
+	SansDNS             []string
+	SansIP              []string
+	SansOID             []string
+	EmailAddress        string
+	Organization        string
+	OrganizationalUnit  string
+	CountryName         string
+	StateOrProvinceName string
+	LocalityName        string
+}
+
+type CertificateSigningRequest struct {
+	Raw                 string
+	CommonName          string
+	SansDNS             []string
+	SansIP              []string
+	SansOID             []string
+	EmailAddress        string
+	Organization        string
+	OrganizationalUnit  string
+	CountryName         string
+	StateOrProvinceName string
+	LocalityName        string
+}
+
+type ProviderCertificate struct {
+	RelationID                string
+	Certificate               Certificate
+	CertificateSigningRequest CertificateSigningRequest
+	CA                        Certificate
+	Chain                     []Certificate
+	Revoked                   bool
+}
+
+func (i *IntegrationProvider) SetRelationCertificate(providerCertificate *ProviderCertificate) error {
+	appData := []ProviderAppData{
+		{
+			CA:                        providerCertificate.CA.Raw,
+			Chain:                     []string{},
+			CertificateSigningRequest: providerCertificate.CertificateSigningRequest.Raw,
+			Certificate:               providerCertificate.Certificate.Raw,
+		},
+	}
+	for _, cert := range providerCertificate.Chain {
+		appData[0].Chain = append(appData[0].Chain, cert.Raw)
+	}
+
+	appDataJSON, err := json.Marshal(appData)
+	if err != nil {
+		return fmt.Errorf("could not marshal app data: %w", err)
+	}
+
+	relationData := map[string]string{
+		"certificates": string(appDataJSON),
+	}
+
+	relationSetOpts := &commands.RelationSetOptions{
+		ID:   providerCertificate.RelationID,
+		App:  true,
+		Data: relationData,
+	}
+
+	err = i.HookContext.Commands.RelationSet(relationSetOpts)
+	if err != nil {
+		return fmt.Errorf("could not set relation data: %w", err)
+	}
+
+	return nil
+}

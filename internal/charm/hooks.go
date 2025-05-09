@@ -79,7 +79,7 @@ func validateConfigOptions(ctx context.Context, hookContext *goops.HookContext) 
 	_, span := otel.Tracer("lego").Start(ctx, "validate config")
 	defer span.End()
 
-	config := ConfigOptions{}
+	config := &ConfigOptions{}
 
 	err := config.LoadFromJuju(hookContext)
 	if err != nil {
@@ -116,7 +116,7 @@ func syncCertificates(ctx context.Context, hookContext *goops.HookContext) error
 		return nil
 	}
 
-	config := ConfigOptions{}
+	config := &ConfigOptions{}
 
 	err = config.LoadFromJuju(hookContext)
 	if err != nil {
@@ -127,7 +127,26 @@ func syncCertificates(ctx context.Context, hookContext *goops.HookContext) error
 	for _, cert := range certRequests {
 		_, err := requestCertificate(config.email, config.server, cert.CertificateSigningRequest, config.plugin)
 		if err != nil {
-			hookContext.Commands.JujuLog(commands.Error, "Could not request certificate: %v", err.Error())
+			hookContext.Commands.JujuLog(commands.Error, "Could not request certificate to acme server: %v", err.Error())
+			continue
+		}
+
+		relationID, err := certsIntegration.GetRelationID()
+		if err != nil {
+			hookContext.Commands.JujuLog(commands.Error, "Could not get relation ID: %v", err.Error())
+			continue
+		}
+
+		err = certsIntegration.SetRelationCertificate(&certificates.ProviderCertificate{ // TODO: Fill in properly
+			RelationID:                relationID,
+			Certificate:               certificates.Certificate{},
+			CertificateSigningRequest: certificates.CertificateSigningRequest{},
+			CA:                        certificates.Certificate{},
+			Chain:                     []certificates.Certificate{},
+			Revoked:                   false,
+		})
+		if err != nil {
+			hookContext.Commands.JujuLog(commands.Error, "Could not set certificate in relation data: %v", err.Error())
 			continue
 		}
 	}
