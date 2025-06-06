@@ -4,8 +4,8 @@ go 1.24.0
 
 require (
 	github.com/go-acme/lego/v4 v4.22.2
-	github.com/gruyaume/goops v0.0.11
-	github.com/gruyaume/notary-k8s-operator v0.0.0-20250509061553-b51160dacfae
+	github.com/gruyaume/charm-libraries/tracing v0.0.0-20250606132824-c67222fdc1c6
+	github.com/gruyaume/goops v0.0.13
 	go.opentelemetry.io/otel v1.35.0
 	go.opentelemetry.io/otel/sdk v1.35.0
 )

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/gruyaume/goops"
-	"github.com/gruyaume/goops/commands"
 )
 
 type ConfigOptions struct {
@@ -14,23 +13,23 @@ type ConfigOptions struct {
 	pluginConfigSecretID string
 }
 
-func (c *ConfigOptions) LoadFromJuju(hookContext *goops.HookContext) error {
-	email, err := hookContext.Commands.ConfigGetString(&commands.ConfigGetOptions{Key: "email"})
+func (c *ConfigOptions) LoadFromJuju() error {
+	email, err := goops.GetConfigString("email")
 	if err != nil {
 		return fmt.Errorf("failed to get email config: %w", err)
 	}
 
-	server, err := hookContext.Commands.ConfigGetString(&commands.ConfigGetOptions{Key: "server"})
+	server, err := goops.GetConfigString("server")
 	if err != nil {
 		return fmt.Errorf("failed to get server config: %w", err)
 	}
 
-	plugin, err := hookContext.Commands.ConfigGetString(&commands.ConfigGetOptions{Key: "plugin"})
+	plugin, err := goops.GetConfigString("plugin")
 	if err != nil {
 		return fmt.Errorf("failed to get plugin config: %w", err)
 	}
 
-	pluginConfigSecretID, err := hookContext.Commands.ConfigGetString(&commands.ConfigGetOptions{Key: "plugin-config-secret-id"})
+	pluginConfigSecretID, err := goops.GetConfigString("plugin-config-secret-id")
 	if err != nil {
 		return fmt.Errorf("failed to get plugin-config-secret-id config: %w", err)
 	}
