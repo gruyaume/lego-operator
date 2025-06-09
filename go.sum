@@ -412,6 +412,8 @@ github.com/grpc-ecosystem/go-grpc-middleware v1.0.0/go.mod h1:FiyG127CGDf3tlThmg
 github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0/go.mod h1:8NvIoxWQoOIhqOTXgfV/d3M/q6VIi02HzZEHgUlZvzk=
 github.com/grpc-ecosystem/grpc-gateway v1.9.0/go.mod h1:vNeuVxBJEsws4ogUvrchl83t/GYV9WGTSLVdBhOQFDY=
 github.com/grpc-ecosystem/grpc-gateway v1.16.0/go.mod h1:BDjrQk3hbvj6Nolgz8mAMFbcEtjT1g+wF4CSlocrBnw=
+github.com/gruyaume/charm-libraries/certificates v0.0.0-20250609200116-16a5979ef15e h1:Ngu7eZrHsU1xo3Dcgd3nBZGmLkU3SMPXxxaB5Ey89UU=
+github.com/gruyaume/charm-libraries/certificates v0.0.0-20250609200116-16a5979ef15e/go.mod h1:KeLQEK/F01aR/9dcs4sCZNLGSHNxKc9thsdJsFK1b5k=
 github.com/gruyaume/goops v0.0.18 h1:um2uqTS7jou1lftn/txz/VxpElyZY6rTVoU/vMlKcac=
 github.com/gruyaume/goops v0.0.18/go.mod h1:91Pt2hUN92i9M74tYVJ1ASmCXV+5UtAnMGKlQmz/21g=
 github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 h1:2VTzZjLZBgl62/EtslCrtky5vbi9dd7HrQPQIx6wqiw=

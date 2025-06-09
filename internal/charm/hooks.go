@@ -3,8 +3,8 @@ package charm
 import (
 	"fmt"
 
+	"github.com/gruyaume/charm-libraries/certificates"
 	"github.com/gruyaume/goops"
-	"github.com/gruyaume/lego-operator/integrations/certificates"
 )
 
 func Configure() error {
@@ -48,10 +48,9 @@ func syncCertificates() error {
 		RelationName: "certificates",
 	}
 
-	certRequests, err := certsIntegration.GetCertificateRequests()
+	certRequests, err := certsIntegration.GetOutstandingCertificateRequests()
 	if err != nil {
-		goops.LogErrorf("Error getting certificate requests: %v", err)
-		return err
+		return fmt.Errorf("could not get certificate requests: %w", err)
 	}
 
 	if len(certRequests) == 0 {
@@ -63,30 +62,22 @@ func syncCertificates() error {
 
 	err = config.LoadFromJuju()
 	if err != nil {
-		goops.LogWarningf("Couldn't load config options: %s", err.Error())
 		return fmt.Errorf("couldn't load config options: %w", err)
 	}
 
 	for _, cert := range certRequests {
-		_, err := requestCertificate(config.email, config.server, cert.CertificateSigningRequest, config.plugin)
+		legoResponse, err := requestCertificate(config.email, config.server, cert.CertificateSigningRequest.Raw, config.plugin)
 		if err != nil {
 			goops.LogErrorf("Could not request certificate to acme server: %v", err.Error())
 			continue
 		}
 
-		relationID, err := certsIntegration.GetRelationID()
-		if err != nil {
-			goops.LogErrorf("Could not get relation ID: %v", err.Error())
-			continue
-		}
-
-		err = certsIntegration.SetRelationCertificate(&certificates.ProviderCertificate{ // TODO: Fill in properly
-			RelationID:                relationID,
-			Certificate:               certificates.Certificate{},
-			CertificateSigningRequest: certificates.CertificateSigningRequest{},
-			CA:                        certificates.Certificate{},
-			Chain:                     []certificates.Certificate{},
-			Revoked:                   false,
+		err = certsIntegration.SetRelationCertificate(&certificates.SetRelationCertificateOptions{
+			RelationID:                cert.RelationID,
+			CA:                        "",         // TODO: Fill in properly
+			Chain:                     []string{}, // TODO: Fill in properly
+			CertificateSigningRequest: cert.CertificateSigningRequest.Raw,
+			Certificate:               legoResponse.Certificate,
 		})
 		if err != nil {
 			goops.LogErrorf("Could not set certificate in relation data: %v", err.Error())

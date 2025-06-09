@@ -4,8 +4,8 @@ go 1.24.0
 
 require (
 	github.com/go-acme/lego/v4 v4.22.2
+	github.com/gruyaume/charm-libraries/certificates v0.0.0-20250609200116-16a5979ef15e
 	github.com/gruyaume/goops v0.0.18
-	go.opentelemetry.io/otel v1.36.0
 )
 
 require (
@@ -169,6 +169,7 @@ require (
 	go.mongodb.org/mongo-driver v1.12.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.54.0 // indirect
+	go.opentelemetry.io/otel v1.36.0 // indirect
 	go.opentelemetry.io/otel/metric v1.36.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.36.0 // indirect
 	go.opentelemetry.io/otel/trace v1.36.0 // indirect
