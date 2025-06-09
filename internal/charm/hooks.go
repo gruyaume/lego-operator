@@ -1,101 +1,49 @@
 package charm
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/gruyaume/goops"
 	"github.com/gruyaume/lego-operator/integrations/certificates"
-	"go.opentelemetry.io/otel"
 )
 
-func HandleDefaultHook(ctx context.Context) {
-	_, span := otel.Tracer("lego").Start(ctx, "handle default hook")
-	defer span.End()
-
-	err := ensureLeader(ctx)
-	if err != nil {
-		return
-	}
-
-	err = validateConfigOptions(ctx)
-	if err != nil {
-		return
-	}
-
-	err = syncCertificates(ctx)
-	if err != nil {
-		return
-	}
-}
-
-func SetStatus(ctx context.Context) {
-	_, span := otel.Tracer("lego").Start(ctx, "set status")
-	defer span.End()
-
-	status := goops.StatusActive
-	message := ""
-
-	err := validateConfigOptions(ctx)
-	if err != nil {
-		status = goops.StatusBlocked
-		message = fmt.Sprintf("invalid config: %s", err.Error())
-	}
-
-	err = goops.SetUnitStatus(status, message)
-	if err != nil {
-		goops.LogErrorf("could not set status: %v", err)
-		return
-	}
-
-	goops.LogInfof("Status set to %s: %s", status, message)
-}
-
-func ensureLeader(ctx context.Context) error {
-	_, span := otel.Tracer("lego").Start(ctx, "ensure leader")
-	defer span.End()
-
+func Configure() error {
 	isLeader, err := goops.IsLeader()
 	if err != nil {
-		goops.LogErrorf("could not check if unit is leader: %v", err)
 		return fmt.Errorf("could not check if unit is leader: %w", err)
 	}
 
 	if !isLeader {
-		goops.LogWarningf("Unit is not leader")
-		return fmt.Errorf("unit is not leader")
+		_ = goops.SetUnitStatus(goops.StatusBlocked, "Unit is not leader")
+		return nil
 	}
 
-	goops.LogInfof("Unit is leader")
-
-	return nil
-}
-
-func validateConfigOptions(ctx context.Context) error {
-	_, span := otel.Tracer("lego").Start(ctx, "validate config")
-	defer span.End()
+	goops.LogDebugf("Unit is leader")
 
 	config := &ConfigOptions{}
 
-	err := config.LoadFromJuju()
+	err = config.LoadFromJuju()
 	if err != nil {
-		goops.LogWarningf("Couldn't load config options: %s", err.Error())
 		return fmt.Errorf("couldn't load config options: %w", err)
 	}
 
 	err = config.Validate()
 	if err != nil {
-		goops.LogWarningf("Config is not valid: %s", err.Error())
-		return fmt.Errorf("config is not valid: %w", err)
+		_ = goops.SetUnitStatus(goops.StatusBlocked, fmt.Sprintf("Invalid config options: %s", err.Error()))
+		return nil
 	}
+
+	err = syncCertificates()
+	if err != nil {
+		return fmt.Errorf("could not synchronize certificates: %w", err)
+	}
+
+	_ = goops.SetUnitStatus(goops.StatusActive, "Certificates synchronized successfully")
 
 	return nil
 }
 
-func syncCertificates(ctx context.Context) error {
-	_, span := otel.Tracer("lego").Start(ctx, "sync certificates")
-	defer span.End()
-
+func syncCertificates() error {
 	certsIntegration := certificates.IntegrationProvider{
 		RelationName: "certificates",
 	}

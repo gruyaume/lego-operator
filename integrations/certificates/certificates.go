@@ -35,16 +35,16 @@ func (i *IntegrationProvider) GetCertificateRequests() ([]*RequirerCertificateSi
 		return nil, fmt.Errorf("could not get relationID: %w", err)
 	}
 
-	relations, err := goops.ListRelations(relationID)
+	relationUnits, err := goops.ListRelationUnits(relationID)
 	if err != nil {
-		return nil, fmt.Errorf("could not list relations for ID %s: %v", relationID, err)
+		return nil, fmt.Errorf("could not list relations units for ID %s: %v", relationID, err)
 	}
 
-	if len(relations) == 0 {
-		return nil, fmt.Errorf("no relations found for ID %s", relationID)
+	if len(relationUnits) == 0 {
+		return nil, fmt.Errorf("no relation unit found for ID %s", relationID)
 	}
 
-	relationData, err := goops.GetUnitRelationData(relationID, relations[0])
+	relationData, err := goops.GetUnitRelationData(relationID, relationUnits[0])
 	if err != nil {
 		return nil, fmt.Errorf("could not get relation data: %w", err)
 	}

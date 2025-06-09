@@ -48,9 +48,3 @@ config:
 provides:
   certificates:
     interface: tls-certificates
-
-requires:
-  tracing:
-    interface: tracing
-    limit: 1
-    optional: true
