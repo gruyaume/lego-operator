@@ -74,8 +74,8 @@ func syncCertificates() error {
 
 		err = certsIntegration.SetRelationCertificate(&certificates.SetRelationCertificateOptions{
 			RelationID:                cert.RelationID,
-			CA:                        "",         // TODO: Fill in properly
-			Chain:                     []string{}, // TODO: Fill in properly
+			CA:                        legoResponse.IssuerCertificate,
+			Chain:                     []string{legoResponse.IssuerCertificate},
 			CertificateSigningRequest: cert.CertificateSigningRequest.Raw,
 			Certificate:               legoResponse.Certificate,
 		})
@@ -83,6 +83,7 @@ func syncCertificates() error {
 			goops.LogErrorf("Could not set certificate in relation data: %v", err.Error())
 			continue
 		}
+		goops.LogInfof("Successfully set certificate for relation %s", cert.RelationID)
 	}
 
 	return nil
