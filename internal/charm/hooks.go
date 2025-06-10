@@ -5,6 +5,11 @@ import (
 
 	"github.com/gruyaume/charm-libraries/certificates"
 	"github.com/gruyaume/goops"
+	"github.com/gruyaume/lego-operator/internal/lego"
+)
+
+const (
+	CertificatesIntegration = "certificates"
 )
 
 func Configure() error {
@@ -33,6 +38,8 @@ func Configure() error {
 		return nil
 	}
 
+	goops.LogDebugf("Config is valid")
+
 	err = syncCertificates()
 	if err != nil {
 		return fmt.Errorf("could not synchronize certificates: %w", err)
@@ -45,7 +52,7 @@ func Configure() error {
 
 func syncCertificates() error {
 	certsIntegration := certificates.IntegrationProvider{
-		RelationName: "certificates",
+		RelationName: CertificatesIntegration,
 	}
 
 	certRequests, err := certsIntegration.GetOutstandingCertificateRequests()
@@ -66,7 +73,7 @@ func syncCertificates() error {
 	}
 
 	for _, cert := range certRequests {
-		legoResponse, err := requestCertificate(config.email, config.server, cert.CertificateSigningRequest.Raw, config.plugin)
+		legoResponse, err := lego.RequestCertificate(config.email, config.server, cert.CertificateSigningRequest.Raw, config.plugin)
 		if err != nil {
 			goops.LogErrorf("Could not request certificate to acme server: %v", err.Error())
 			continue
@@ -83,6 +90,7 @@ func syncCertificates() error {
 			goops.LogErrorf("Could not set certificate in relation data: %v", err.Error())
 			continue
 		}
+
 		goops.LogInfof("Successfully set certificate for relation %s", cert.RelationID)
 	}
 

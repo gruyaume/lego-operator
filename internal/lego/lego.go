@@ -1,4 +1,4 @@
-package charm
+package lego
 
 import (
 	"crypto"
@@ -52,7 +52,7 @@ func (u *LetsEncryptUser) GetPrivateKey() crypto.PrivateKey {
 	return u.key
 }
 
-func requestCertificate(email, server, csr, plugin string) (*LegoOutputResponse, error) {
+func RequestCertificate(email, server, csr, plugin string) (*LegoOutputResponse, error) {
 	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't generate priv key: %s", err)
