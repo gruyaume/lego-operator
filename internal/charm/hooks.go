@@ -2,6 +2,8 @@ package charm
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/gruyaume/charm-libraries/certificates"
 	"github.com/gruyaume/goops"
@@ -27,10 +29,7 @@ func Configure() error {
 
 	config := &ConfigOptions{}
 
-	err = config.LoadFromJuju()
-	if err != nil {
-		return fmt.Errorf("couldn't load config options: %w", err)
-	}
+	config.LoadFromJuju()
 
 	err = config.Validate()
 	if err != nil {
@@ -40,6 +39,12 @@ func Configure() error {
 
 	goops.LogDebugf("Config is valid")
 
+	err = setEnvVars(config.pluginConfigSecretID)
+	if err != nil {
+		_ = goops.SetUnitStatus(goops.StatusBlocked, fmt.Sprintf("Could not set environment variables: %s", err.Error()))
+		return nil
+	}
+
 	err = syncCertificates()
 	if err != nil {
 		return fmt.Errorf("could not synchronize certificates: %w", err)
@@ -48,6 +53,40 @@ func Configure() error {
 	_ = goops.SetUnitStatus(goops.StatusActive, "Certificates synchronized successfully")
 
 	return nil
+}
+
+// setEnvVars sets environment variables from the plugin configuration secret.
+// It retrieves the secret content and sets each key-value pair as an environment variable.
+func setEnvVars(pluginConfigSecretID string) error {
+	secretContent, err := goops.GetSecretByID(pluginConfigSecretID, false, true)
+	if err != nil {
+		return fmt.Errorf("could not get secret %s: %w", pluginConfigSecretID, err)
+	}
+
+	for key, value := range secretContent {
+		envKey := toEnvVarName(key)
+
+		err := os.Setenv(envKey, value)
+		if err != nil {
+			goops.LogErrorf("Could not set environment variable %s: %s", envKey, err.Error())
+			continue
+		}
+	}
+
+	goops.LogDebugf("Environment variables set successfully")
+
+	return nil
+}
+
+func toEnvVarName(key string) string {
+	key = os.ExpandEnv(key)
+	key = os.Expand(key, func(s string) string {
+		return os.Getenv(s)
+	})
+	key = strings.ToUpper(key)
+	key = strings.ReplaceAll(key, "-", "_")
+
+	return key
 }
 
 func syncCertificates() error {
@@ -67,10 +106,7 @@ func syncCertificates() error {
 
 	config := &ConfigOptions{}
 
-	err = config.LoadFromJuju()
-	if err != nil {
-		return fmt.Errorf("couldn't load config options: %w", err)
-	}
+	config.LoadFromJuju()
 
 	for _, cert := range certRequests {
 		legoResponse, err := lego.RequestCertificate(config.email, config.server, cert.CertificateSigningRequest.Raw, config.plugin)

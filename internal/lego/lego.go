@@ -9,12 +9,9 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"os"
 
 	"github.com/go-acme/lego/v4/certcrypto"
 	"github.com/go-acme/lego/v4/certificate"
-	"github.com/go-acme/lego/v4/challenge/http01"
-	"github.com/go-acme/lego/v4/challenge/tlsalpn01"
 	"github.com/go-acme/lego/v4/lego"
 	"github.com/go-acme/lego/v4/providers/dns"
 	"github.com/go-acme/lego/v4/registration"
@@ -73,9 +70,14 @@ func RequestCertificate(email, server, csr, plugin string) (*LegoOutputResponse,
 		return nil, fmt.Errorf("couldn't create lego client: %s", err)
 	}
 
-	err = configureClientChallenges(client, plugin)
+	dnsProvider, err := dns.NewDNSChallengeProviderByName(plugin)
 	if err != nil {
-		return nil, fmt.Errorf("couldn't configure client challenges: %s", err)
+		return nil, errors.Join(fmt.Errorf("couldn't create %s provider: ", plugin), err)
+	}
+
+	err = client.Challenge.SetDNS01Provider(dnsProvider)
+	if err != nil {
+		return nil, errors.Join(fmt.Errorf("couldn't set %s DNS provider server: ", plugin), err)
 	}
 
 	reg, err := client.Registration.Register(registration.RegisterOptions{TermsOfServiceAgreed: true})
@@ -114,31 +116,4 @@ func RequestCertificate(email, server, csr, plugin string) (*LegoOutputResponse,
 			Domain:    certificates.Domain,
 		},
 	}, nil
-}
-
-func configureClientChallenges(client *lego.Client, plugin string) error {
-	switch plugin {
-	case "":
-		err := client.Challenge.SetHTTP01Provider(http01.NewProviderServer(os.Getenv("HTTP01_IFACE"), os.Getenv("HTTP01_PORT")))
-		if err != nil {
-			return errors.Join(errors.New("couldn't set http01 provider server: "), err)
-		}
-
-		err = client.Challenge.SetTLSALPN01Provider(tlsalpn01.NewProviderServer(os.Getenv("TLSALPN01_IFACE"), os.Getenv("TLSALPN01_PORT")))
-		if err != nil {
-			return errors.Join(errors.New("couldn't set tlsalpn01 provider server: "), err)
-		}
-	default:
-		dnsProvider, err := dns.NewDNSChallengeProviderByName(plugin)
-		if err != nil {
-			return errors.Join(fmt.Errorf("couldn't create %s provider: ", plugin), err)
-		}
-
-		err = client.Challenge.SetDNS01Provider(dnsProvider)
-		if err != nil {
-			return errors.Join(fmt.Errorf("couldn't set %s DNS provider server: ", plugin), err)
-		}
-	}
-
-	return nil
 }

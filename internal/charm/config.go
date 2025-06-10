@@ -13,33 +13,31 @@ type ConfigOptions struct {
 	pluginConfigSecretID string
 }
 
-func (c *ConfigOptions) LoadFromJuju() error {
+func (c *ConfigOptions) LoadFromJuju() {
 	email, err := goops.GetConfigString("email")
 	if err != nil {
-		return fmt.Errorf("failed to get email config: %w", err)
+		email = ""
 	}
 
 	server, err := goops.GetConfigString("server")
 	if err != nil {
-		return fmt.Errorf("failed to get server config: %w", err)
+		server = ""
 	}
 
 	plugin, err := goops.GetConfigString("plugin")
 	if err != nil {
-		return fmt.Errorf("failed to get plugin config: %w", err)
+		plugin = ""
 	}
 
 	pluginConfigSecretID, err := goops.GetConfigString("plugin-config-secret-id")
 	if err != nil {
-		return fmt.Errorf("failed to get plugin-config-secret-id config: %w", err)
+		pluginConfigSecretID = ""
 	}
 
 	c.email = email
 	c.server = server
 	c.plugin = plugin
 	c.pluginConfigSecretID = pluginConfigSecretID
-
-	return nil
 }
 
 func (c *ConfigOptions) Validate() error {
@@ -49,6 +47,14 @@ func (c *ConfigOptions) Validate() error {
 
 	if c.server == "" {
 		return fmt.Errorf("server config is empty")
+	}
+
+	if c.plugin == "" {
+		return fmt.Errorf("plugin config is empty")
+	}
+
+	if c.pluginConfigSecretID == "" {
+		return fmt.Errorf("plugin config secret ID is empty")
 	}
 
 	return nil
