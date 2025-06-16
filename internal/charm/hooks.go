@@ -27,9 +27,13 @@ func Configure() error {
 
 	goops.LogDebugf("Unit is leader")
 
-	config := &ConfigOptions{}
+	config := ConfigOptions{}
 
-	config.LoadFromJuju()
+	err = goops.GetConfig(&config)
+	if err != nil {
+		_ = goops.SetUnitStatus(goops.StatusBlocked, fmt.Sprintf("Could not get config: %s", err.Error()))
+		return nil
+	}
 
 	err = config.Validate()
 	if err != nil {
@@ -39,7 +43,7 @@ func Configure() error {
 
 	goops.LogDebugf("Config is valid")
 
-	err = setEnvVars(config.pluginConfigSecretID)
+	err = setEnvVars(config.PluginConfigSecretID)
 	if err != nil {
 		_ = goops.SetUnitStatus(goops.StatusBlocked, fmt.Sprintf("Could not set environment variables: %s", err.Error()))
 		return nil
@@ -104,12 +108,15 @@ func syncCertificates() error {
 		return nil
 	}
 
-	config := &ConfigOptions{}
+	config := ConfigOptions{}
 
-	config.LoadFromJuju()
+	err = goops.GetConfig(&config)
+	if err != nil {
+		return fmt.Errorf("could not get config: %w", err)
+	}
 
 	for _, cert := range certRequests {
-		legoResponse, err := lego.RequestCertificate(config.email, config.server, cert.CertificateSigningRequest.Raw, config.plugin)
+		legoResponse, err := lego.RequestCertificate(config.Email, config.Server, cert.CertificateSigningRequest.Raw, config.Plugin)
 		if err != nil {
 			goops.LogErrorf("Could not request certificate to acme server: %v", err.Error())
 			continue
