@@ -31,8 +31,7 @@ func Configure() error {
 
 	err = goops.GetConfig(&config)
 	if err != nil {
-		_ = goops.SetUnitStatus(goops.StatusBlocked, fmt.Sprintf("Could not get config: %s", err.Error()))
-		return nil
+		return fmt.Errorf("could not get config: %w", err)
 	}
 
 	err = config.Validate()

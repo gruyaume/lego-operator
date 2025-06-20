@@ -4,8 +4,8 @@ go 1.24.0
 
 require (
 	github.com/go-acme/lego/v4 v4.23.1
-	github.com/gruyaume/charm-libraries/certificates v0.0.0-20250616201711-3306286fd3a6
-	github.com/gruyaume/goops v0.0.19
+	github.com/gruyaume/charm-libraries/certificates v0.0.0-20250619014909-2e6aa47e85d1
+	github.com/gruyaume/goops v0.0.22-0.20250620173047-971726001ab0
 )
 
 require (
@@ -51,6 +51,7 @@ require (
 	github.com/baidubce/bce-sdk-go v0.9.223 // indirect
 	github.com/benbjohnson/clock v1.3.0 // indirect
 	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
+	github.com/canonical/pebble v1.22.2 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/civo/civogo v0.3.11 // indirect
 	github.com/cloudflare/cloudflare-go v0.115.0 // indirect
@@ -83,6 +84,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.14.1 // indirect
 	github.com/gophercloud/gophercloud v1.14.1 // indirect
 	github.com/gophercloud/utils v0.0.0-20231010081019-80377eca5d56 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
