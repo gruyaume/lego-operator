@@ -53,6 +53,44 @@ func TestGivenInvalidConfigWhenConfigureThenStatusBlocked(t *testing.T) {
 	}
 }
 
+func TestGivenValidConfigWhenConfigureThenStatusActive(t *testing.T) {
+	ctx := goopstest.Context{
+		Charm: charm.Configure,
+	}
+
+	stateIn := &goopstest.State{
+		Leader: true,
+		Config: map[string]string{
+			"email":                   "guillaume@pizza.com",
+			"server":                  "https://example.com",
+			"plugin":                  "some-plugin",
+			"plugin-config-secret-id": "some-secret-id",
+		},
+		Secrets: []*goopstest.Secret{
+			{
+				ID: "some-secret-id",
+				Content: map[string]string{
+					"AWS_ACCESS_KEY_ID":   "AKIAIOSFODNN7EXAMPLE",
+					"AWS_ASSUME_ROLE_ARN": "arn:aws:iam::123456789012:role/ExampleRole",
+				},
+			},
+		},
+	}
+
+	stateOut, err := ctx.Run("start", stateIn)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if ctx.CharmErr != nil {
+		t.Fatalf("unexpected charm error: %v", ctx.CharmErr)
+	}
+
+	if stateOut.UnitStatus != string(goops.StatusActive) {
+		t.Errorf("expected status %s, got %s", goops.StatusActive, stateOut.UnitStatus)
+	}
+}
+
 func TestGivenValidConfigWhenConfigureThenEnvironmentVariablesAreSet(t *testing.T) {
 	ctx := goopstest.Context{
 		Charm: charm.Configure,
