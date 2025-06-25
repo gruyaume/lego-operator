@@ -14,7 +14,7 @@ func TestGivenNotLeaderWhenConfigureThenStatusBlocked(t *testing.T) {
 		Charm: charm.Configure,
 	}
 
-	stateIn := &goopstest.State{
+	stateIn := goopstest.State{
 		Leader: false,
 	}
 
@@ -23,7 +23,11 @@ func TestGivenNotLeaderWhenConfigureThenStatusBlocked(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if stateOut.UnitStatus != string(goops.StatusBlocked) {
+	expectedStatus := goopstest.Status{
+		Name:    goopstest.StatusBlocked,
+		Message: "Unit is not leader",
+	}
+	if stateOut.UnitStatus != expectedStatus {
 		t.Errorf("expected status %s, got %s", goops.StatusBlocked, stateOut.UnitStatus)
 	}
 }
@@ -33,9 +37,9 @@ func TestGivenInvalidConfigWhenConfigureThenStatusBlocked(t *testing.T) {
 		Charm: charm.Configure,
 	}
 
-	stateIn := &goopstest.State{
+	stateIn := goopstest.State{
 		Leader: true,
-		Config: map[string]string{
+		Config: map[string]any{
 			"email":                   "invalid-email",
 			"server":                  "",
 			"plugin":                  "some-plugin",
@@ -48,7 +52,11 @@ func TestGivenInvalidConfigWhenConfigureThenStatusBlocked(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if stateOut.UnitStatus != string(goops.StatusBlocked) {
+	expectedStatus := goopstest.Status{
+		Name:    goopstest.StatusBlocked,
+		Message: "Invalid config options: server config is empty",
+	}
+	if stateOut.UnitStatus != expectedStatus {
 		t.Errorf("expected status %s, got %s", goops.StatusBlocked, stateOut.UnitStatus)
 	}
 }
@@ -58,15 +66,15 @@ func TestGivenValidConfigWhenConfigureThenStatusActive(t *testing.T) {
 		Charm: charm.Configure,
 	}
 
-	stateIn := &goopstest.State{
+	stateIn := goopstest.State{
 		Leader: true,
-		Config: map[string]string{
+		Config: map[string]any{
 			"email":                   "guillaume@pizza.com",
 			"server":                  "https://example.com",
 			"plugin":                  "some-plugin",
 			"plugin-config-secret-id": "some-secret-id",
 		},
-		Secrets: []*goopstest.Secret{
+		Secrets: []goopstest.Secret{
 			{
 				ID: "some-secret-id",
 				Content: map[string]string{
@@ -86,7 +94,11 @@ func TestGivenValidConfigWhenConfigureThenStatusActive(t *testing.T) {
 		t.Fatalf("unexpected charm error: %v", ctx.CharmErr)
 	}
 
-	if stateOut.UnitStatus != string(goops.StatusActive) {
+	expectedStatus := goopstest.Status{
+		Name:    goopstest.StatusActive,
+		Message: "Certificates synchronized successfully",
+	}
+	if stateOut.UnitStatus != expectedStatus {
 		t.Errorf("expected status %s, got %s", goops.StatusActive, stateOut.UnitStatus)
 	}
 }
@@ -96,15 +108,15 @@ func TestGivenValidConfigWhenConfigureThenEnvironmentVariablesAreSet(t *testing.
 		Charm: charm.Configure,
 	}
 
-	stateIn := &goopstest.State{
+	stateIn := goopstest.State{
 		Leader: true,
-		Config: map[string]string{
+		Config: map[string]any{
 			"email":                   "guillaume@pizza.com",
 			"server":                  "https://example.com",
 			"plugin":                  "some-plugin",
 			"plugin-config-secret-id": "some-secret-id",
 		},
-		Secrets: []*goopstest.Secret{
+		Secrets: []goopstest.Secret{
 			{
 				ID: "some-secret-id",
 				Content: map[string]string{

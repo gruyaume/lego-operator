@@ -4,8 +4,8 @@ go 1.24.0
 
 require (
 	github.com/go-acme/lego/v4 v4.23.1
-	github.com/gruyaume/charm-libraries/certificates v0.0.0-20250619014909-2e6aa47e85d1
-	github.com/gruyaume/goops v0.0.22-0.20250620173047-971726001ab0
+	github.com/gruyaume/charm-libraries/certificates v0.0.0-20250625161320-3ff038b3bbfb
+	github.com/gruyaume/goops v0.0.22
 )
 
 require (
