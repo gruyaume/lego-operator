@@ -420,10 +420,10 @@ github.com/grpc-ecosystem/go-grpc-middleware v1.0.0/go.mod h1:FiyG127CGDf3tlThmg
 github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0/go.mod h1:8NvIoxWQoOIhqOTXgfV/d3M/q6VIi02HzZEHgUlZvzk=
 github.com/grpc-ecosystem/grpc-gateway v1.9.0/go.mod h1:vNeuVxBJEsws4ogUvrchl83t/GYV9WGTSLVdBhOQFDY=
 github.com/grpc-ecosystem/grpc-gateway v1.16.0/go.mod h1:BDjrQk3hbvj6Nolgz8mAMFbcEtjT1g+wF4CSlocrBnw=
-github.com/gruyaume/charm-libraries/certificates v0.0.0-20250619014909-2e6aa47e85d1 h1:1tdW1Dg/6h3lzGPbbPSQyzS56my4Rd7Q9zqzKOjzcAo=
-github.com/gruyaume/charm-libraries/certificates v0.0.0-20250619014909-2e6aa47e85d1/go.mod h1:uO6ooYMIprgLZcK0ynioaZ/2UvOdj4j+v32tR4pQe4I=
-github.com/gruyaume/goops v0.0.22-0.20250620173047-971726001ab0 h1:SbT3L+YH5uX3LbuGLAp1mN1w0WFy7jEMuWybPg35Rig=
-github.com/gruyaume/goops v0.0.22-0.20250620173047-971726001ab0/go.mod h1:mLOsaUCP8Tr/t3aLvgDsOqvqjn0jDZ9jyc8iFKEdCls=
+github.com/gruyaume/charm-libraries/certificates v0.0.0-20250625161320-3ff038b3bbfb h1:K998xvib0DtOz4DPpchq+Q1gG2Pxw1czEeRuwuBzYB4=
+github.com/gruyaume/charm-libraries/certificates v0.0.0-20250625161320-3ff038b3bbfb/go.mod h1:cA23aCqnzEa7PTZXWo5h5bX0jMo+Wms563z3ZNtYYhI=
+github.com/gruyaume/goops v0.0.22 h1:npzpqFhzkDkj581e8yQwaq+6w6Ye68YfI5vnIg5cQ6o=
+github.com/gruyaume/goops v0.0.22/go.mod h1:mLOsaUCP8Tr/t3aLvgDsOqvqjn0jDZ9jyc8iFKEdCls=
 github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 h1:2VTzZjLZBgl62/EtslCrtky5vbi9dd7HrQPQIx6wqiw=
 github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542/go.mod h1:Ow0tF8D4Kplbc8s8sSb3V2oUCygFHVp8gC3Dn6U4MNI=
 github.com/hashicorp/consul/api v1.1.0/go.mod h1:VmuI/Lkw1nC05EYQWNKwWGbkg+FbDBtguAZLlVdkD9Q=
