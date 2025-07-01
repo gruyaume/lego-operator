@@ -422,8 +422,12 @@ github.com/grpc-ecosystem/grpc-gateway v1.9.0/go.mod h1:vNeuVxBJEsws4ogUvrchl83t
 github.com/grpc-ecosystem/grpc-gateway v1.16.0/go.mod h1:BDjrQk3hbvj6Nolgz8mAMFbcEtjT1g+wF4CSlocrBnw=
 github.com/gruyaume/charm-libraries/certificates v0.0.0-20250625161320-3ff038b3bbfb h1:K998xvib0DtOz4DPpchq+Q1gG2Pxw1czEeRuwuBzYB4=
 github.com/gruyaume/charm-libraries/certificates v0.0.0-20250625161320-3ff038b3bbfb/go.mod h1:cA23aCqnzEa7PTZXWo5h5bX0jMo+Wms563z3ZNtYYhI=
+github.com/gruyaume/charm-libraries/certificates v0.0.0-20250701171023-ffdb6331787c h1:vJ6bRGEvmXk6wyc2HujlsZR884VXM0L16j9+wt3oPQc=
+github.com/gruyaume/charm-libraries/certificates v0.0.0-20250701171023-ffdb6331787c/go.mod h1:GPPlphnspVlFFBi18FXOA85EQLZhK0Xoi2kxe5+RO5A=
 github.com/gruyaume/goops v0.0.22 h1:npzpqFhzkDkj581e8yQwaq+6w6Ye68YfI5vnIg5cQ6o=
 github.com/gruyaume/goops v0.0.22/go.mod h1:mLOsaUCP8Tr/t3aLvgDsOqvqjn0jDZ9jyc8iFKEdCls=
+github.com/gruyaume/goops v0.0.23 h1:0W4zgshzoqWfdgGCq91rtiJzyR6JlHOyMJO34EagFPs=
+github.com/gruyaume/goops v0.0.23/go.mod h1:mLOsaUCP8Tr/t3aLvgDsOqvqjn0jDZ9jyc8iFKEdCls=
 github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 h1:2VTzZjLZBgl62/EtslCrtky5vbi9dd7HrQPQIx6wqiw=
 github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542/go.mod h1:Ow0tF8D4Kplbc8s8sSb3V2oUCygFHVp8gC3Dn6U4MNI=
 github.com/hashicorp/consul/api v1.1.0/go.mod h1:VmuI/Lkw1nC05EYQWNKwWGbkg+FbDBtguAZLlVdkD9Q=

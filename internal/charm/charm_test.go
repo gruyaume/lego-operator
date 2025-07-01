@@ -10,18 +10,15 @@ import (
 )
 
 func TestGivenNotLeaderWhenConfigureThenStatusBlocked(t *testing.T) {
-	ctx := goopstest.Context{
-		Charm: charm.Configure,
-	}
+	ctx := goopstest.NewContext(
+		charm.Configure,
+	)
 
 	stateIn := goopstest.State{
 		Leader: false,
 	}
 
-	stateOut, err := ctx.Run("start", stateIn)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	stateOut := ctx.Run("start", stateIn)
 
 	expectedStatus := goopstest.Status{
 		Name:    goopstest.StatusBlocked,
@@ -33,9 +30,9 @@ func TestGivenNotLeaderWhenConfigureThenStatusBlocked(t *testing.T) {
 }
 
 func TestGivenInvalidConfigWhenConfigureThenStatusBlocked(t *testing.T) {
-	ctx := goopstest.Context{
-		Charm: charm.Configure,
-	}
+	ctx := goopstest.NewContext(
+		charm.Configure,
+	)
 
 	stateIn := goopstest.State{
 		Leader: true,
@@ -47,9 +44,10 @@ func TestGivenInvalidConfigWhenConfigureThenStatusBlocked(t *testing.T) {
 		},
 	}
 
-	stateOut, err := ctx.Run("start", stateIn)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+	stateOut := ctx.Run("start", stateIn)
+
+	if ctx.CharmErr != nil {
+		t.Fatalf("unexpected charm error: %v", ctx.CharmErr)
 	}
 
 	expectedStatus := goopstest.Status{
@@ -62,9 +60,9 @@ func TestGivenInvalidConfigWhenConfigureThenStatusBlocked(t *testing.T) {
 }
 
 func TestGivenValidConfigWhenConfigureThenStatusActive(t *testing.T) {
-	ctx := goopstest.Context{
-		Charm: charm.Configure,
-	}
+	ctx := goopstest.NewContext(
+		charm.Configure,
+	)
 
 	stateIn := goopstest.State{
 		Leader: true,
@@ -85,10 +83,7 @@ func TestGivenValidConfigWhenConfigureThenStatusActive(t *testing.T) {
 		},
 	}
 
-	stateOut, err := ctx.Run("start", stateIn)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
-	}
+	stateOut := ctx.Run("start", stateIn)
 
 	if ctx.CharmErr != nil {
 		t.Fatalf("unexpected charm error: %v", ctx.CharmErr)
@@ -104,9 +99,9 @@ func TestGivenValidConfigWhenConfigureThenStatusActive(t *testing.T) {
 }
 
 func TestGivenValidConfigWhenConfigureThenEnvironmentVariablesAreSet(t *testing.T) {
-	ctx := goopstest.Context{
-		Charm: charm.Configure,
-	}
+	ctx := goopstest.NewContext(
+		charm.Configure,
+	)
 
 	stateIn := goopstest.State{
 		Leader: true,
@@ -127,9 +122,10 @@ func TestGivenValidConfigWhenConfigureThenEnvironmentVariablesAreSet(t *testing.
 		},
 	}
 
-	_, err := ctx.Run("start", stateIn)
-	if err != nil {
-		t.Fatalf("unexpected error: %v", err)
+	_ = ctx.Run("start", stateIn)
+
+	if ctx.CharmErr != nil {
+		t.Fatalf("unexpected charm error: %v", ctx.CharmErr)
 	}
 
 	envAWSKey := os.Getenv("AWS_ACCESS_KEY_ID")
