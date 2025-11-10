@@ -3,7 +3,7 @@ module github.com/gruyaume/lego-operator
 go 1.24.0
 
 require (
-	github.com/go-acme/lego/v4 v4.28.0
+	github.com/go-acme/lego/v4 v4.28.1
 	github.com/gruyaume/charm-libraries/certificates v0.0.0-20250701171023-ffdb6331787c
 	github.com/gruyaume/goops v0.0.23
 )
